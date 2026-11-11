@@ -4,13 +4,13 @@ import { Nav } from "@/components/Nav";
 import { LiveProvider } from "@/components/LiveProvider";
 
 export const metadata: Metadata = {
-  title: "MotionCare — Хөдөлгөөний хяналт",
+  title: "Хөдөлгөөн таних систем",
   description: "MPU6050 + ESP32-S3 мэдрэгчийн өгөгдлөөр хүний хөдөлгөөнийг бодит хугацаанд таних эрүүл мэндийн туслах систем",
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f2f7" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f6f6" },
     { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };

@@ -1,7 +1,5 @@
 // ESP32-C3 төхөөрөмжийг дуурайж /api/ingest руу өгөгдөл илгээх тест скрипт.
 // Ажиллуулах:  node scripts/fake-device.mjs [http://localhost:3000] [dev-secret-key]
-// Төхөөрөмжгүйгээр бүх урсгал (ingest → ML → SSE → веб) ажиллаж байгааг шалгахад хэрэглэнэ.
-// Firmware шиг ws://127.0.0.1:81 WebSocket сервер нээж, хэмжилт бүрийг веб рүү шууд илгээнэ.
 import { createServer } from "node:http";
 import { createHash } from "node:crypto";
 const SERVER = process.argv[2] ?? "http://localhost:3000";
@@ -23,7 +21,6 @@ function sample(act, t) {
   }
 }
 
-// ---- WebSocket сервер (firmware-ийн wsService-тэй ижил протокол) ----
 const sockets = new Set();
 const wsSrv = createServer((_, res) => res.writeHead(426).end());
 wsSrv.on("upgrade", (req, sock) => {

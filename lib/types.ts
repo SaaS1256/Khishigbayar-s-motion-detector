@@ -1,9 +1,3 @@
-/**
- * Төслийн нийтлэг өгөгдлийн төрлүүд.
- * Төхөөрөмж (ESP32-S3), сервер (ML), веб гурав энэ гэрээгээр харилцана.
- */
-
-/** Таних хөдөлгөөний ангилал */
 export type Activity = "sitting" | "standing" | "walking" | "running" | "lying" | "fall";
 
 /** MPU6050-ийн нэг хэмжилт. Хурдатгал g-ээр, эргэлт °/s-ээр */
@@ -26,30 +20,27 @@ export interface GpsFix {
   t: number;
 }
 
-/** Төхөөрөмжөөс /api/ingest руу ирэх багц */
 export interface IngestPayload {
   deviceId: string;
   samples: SensorSample[];
   gps?: Omit<GpsFix, "t"> & { t?: number };
   battery?: number; // 0–100
   rssi?: number; // dBm
-  /** Төхөөрөмжийн LAN IP — веб ws://<ip>:81-ээр шууд холбогдоно */
   ip?: string;
 }
 
-/** ML загварын гаргасан үр дүн */
 export interface Prediction {
   deviceId: string;
   t: number;
   activity: Activity;
   confidence: number; // 0–1
-  /** Бүх ангиллын магадлал */
   scores: Record<Activity, number>;
   model: string;
   latencyMs: number;
+  /** ML-ийн "шилжилт" (суух/босох/хэвтэх хөдөлгөөн) магадлал 0–1. 0.5-аас их бол ангиллыг солихгүй */
+  transition?: number;
 }
 
-/** Нэг төрлийн хөдөлгөөн тасралтгүй үргэлжилсэн хэсэг */
 export interface Segment {
   activity: Activity;
   start: number;
@@ -78,13 +69,11 @@ export interface DeviceStatus {
   ip?: string;
 }
 
-/** Вэб рүү SSE-ээр секунд тутам илгээгдэх хураангуй төлөв */
 export interface Snapshot {
   now: number;
   device: DeviceStatus | null;
   current: Prediction | null;
   currentSince: number | null;
-  /** Сүүлийн ~10 сек: хурдатгалын хэмжээ ба тэнхлэгүүд */
   signal: { t: number; mag: number; ax: number; ay: number; az: number }[];
   /** Өнөөдрийн ангилал тус бүрийн хугацаа (ms) */
   today: Record<Activity, number>;
@@ -93,7 +82,6 @@ export interface Snapshot {
   gps: GpsFix | null;
 }
 
-/** Төхөөрөмж /api/ingest-ийн хариуд авах товч үр дүн (OLED-д харуулна) */
 export interface DeviceResponse {
   ok: true;
   activity: Activity | null;

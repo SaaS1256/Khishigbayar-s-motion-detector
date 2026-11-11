@@ -16,15 +16,15 @@ const LAG_MS = 300; // багцын хооронд гөлгөр гүйлгэхи
 
 type Key = "ax" | "ay" | "az" | "gx" | "gy" | "gz" | "mag";
 const ACC: { key: Key; label: string; color: string }[] = [
-  { key: "ax", label: "aX", color: "#ff375f" },
-  { key: "ay", label: "aY", color: "#30b07a" },
-  { key: "az", label: "aZ", color: "#0a84ff" },
-  { key: "mag", label: "|a|", color: "#ff9f0a" },
+  { key: "ax", label: "aX", color: "#151515" },
+  { key: "ay", label: "aY", color: "#a3a3a3" },
+  { key: "az", label: "aZ", color: "#8fb0ff" },
+  { key: "mag", label: "|a|", color: "#2a61fd" },
 ];
 const GYR: { key: Key; label: string; color: string }[] = [
-  { key: "gx", label: "gX", color: "#ff375f" },
-  { key: "gy", label: "gY", color: "#30b07a" },
-  { key: "gz", label: "gZ", color: "#0a84ff" },
+  { key: "gx", label: "gX", color: "#151515" },
+  { key: "gy", label: "gY", color: "#a3a3a3" },
+  { key: "gz", label: "gZ", color: "#2a61fd" },
 ];
 
 const val = (s: SensorSample, k: Key) => (k === "mag" ? Math.hypot(s.ax, s.ay, s.az) : s[k]);
@@ -44,11 +44,10 @@ function drawPanel(
   const tStart = tEnd - WINDOW_MS;
   let r = minRange;
   for (const s of samples) if (s.t >= tStart) for (const { key } of series) r = Math.max(r, Math.abs(val(s, key)));
-  r = minRange >= 10 ? Math.ceil((r * 1.1) / 50) * 50 : Math.ceil(r * 1.1 * 2) / 2; // тоймтой хязгаар
+  r = minRange >= 10 ? Math.ceil((r * 1.1) / 50) * 50 : Math.ceil(r * 1.1 * 2) / 2;
   const yOf = (v: number) => y0 + h / 2 - (v / r) * (h / 2 - 4);
   const xOf = (t: number) => ((t - tStart) / WINDOW_MS) * w;
 
-  // тор
   ctx.strokeStyle = css.sep;
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -68,7 +67,6 @@ function drawPanel(
   ctx.fillText(`+${r} ${unit}`, 4, y0 + 12);
   ctx.fillText(`−${r}`, 4, y0 + h - 4);
 
-  // шугамууд
   ctx.lineWidth = 1.75;
   ctx.lineJoin = "round";
   for (const { key, color } of series) {
@@ -150,7 +148,6 @@ export function LiveSensorCard() {
   const [src, setSrc] = useState<SampleStream["source"]>(null);
   const [ro, setRo] = useState<Readout>({ s: null, hz: 0, stale: true });
 
-  // Тоон утгуудыг секундэд 10 удаа шинэчилнэ
   useEffect(() => {
     const id = setInterval(() => {
       const st = stream.current;
@@ -181,10 +178,10 @@ export function LiveSensorCard() {
       <CardHeader
         icon={<Wave size={18} />}
         title="Мэдрэгчийн дохио — шууд"
-        color="#ff375f"
+        color="#141414"
         meta={
           <span className="flex items-center gap-1.5">
-            <i className={`h-2 w-2 rounded-full ${ro.stale ? "bg-muted" : "animate-pulse bg-[#30b07a]"}`} />
+            <i className={`h-2 w-2 rounded-full ${ro.stale ? "bg-muted" : "animate-pulse bg-[#2a61fd]"}`} />
             {ro.stale ? "Дохио алга" : `${Math.round(ro.hz)} Hz`} · {devName}
           </span>
         }
@@ -213,11 +210,10 @@ export function LiveSensorCard() {
       </div>
       <canvas ref={canvas} className="mt-1 block h-72 w-full" />
 
-      {/* Өгөгдлийн эх үүсвэр: ESP32-оос шууд WebSocket эсвэл сервер (SSE) */}
       <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-sep pt-3 text-[12px] text-muted">
         <span
           className={`rounded-full px-2 py-0.5 font-medium ${
-            src === "ws" && !ro.stale ? "bg-[#30b07a]/15 text-[#30b07a]" : "bg-fill text-muted"
+            src === "ws" && !ro.stale ? "bg-[#2a61fd]/10 text-[#2a61fd]" : "bg-fill text-muted"
           }`}
         >
           {src === "ws" && !ro.stale ? "ESP32 → веб шууд (WebSocket)" : src === "sse" && !ro.stale ? "Сервероор дамжиж" : "Холболтгүй"}
@@ -245,11 +241,11 @@ export function LiveSensorCard() {
               placeholder="192.168.1.50 эсвэл motioncare.local"
               className="w-60 rounded-lg bg-fill px-2 py-1 text-ink outline-none"
             />
-            <button className="rounded-lg bg-[#0a84ff] px-2 py-1 font-medium text-white">Хадгалах</button>
+            <button className="rounded-lg bg-[#151515] px-2 py-1 font-medium text-white">Хадгалах</button>
           </form>
         ) : (
           <button
-            className="text-[#0a84ff] hover:opacity-70"
+            className="text-[#2a61fd] hover:opacity-70"
             onClick={() => {
               setDraft(ws.manual);
               setEditing(true);

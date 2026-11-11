@@ -3,9 +3,8 @@ import type { Activity } from "./types";
 export interface ActivityMeta {
   key: Activity;
   label: string;
-  /** Нэр үг хэлбэр (түүх, жагсаалтад) */
   noun: string;
-  /** OLED дэлгэц дээр харуулах латин нэр */
+  /** OLED дэлгэц дээр харуулах нэр */
   short: string;
   color: string;
   soft: string;
@@ -13,12 +12,12 @@ export interface ActivityMeta {
 }
 
 export const ACTIVITIES: Record<Activity, ActivityMeta> = {
-  sitting: { key: "sitting", noun: "Суух", label: "Сууж байна", short: "Sitting", color: "#5E5CE6", soft: "#EEEEFD", description: "Тогтвортой байрлал, бага хурдатгал" },
-  standing: { key: "standing", noun: "Зогсох", label: "Зогсож байна", short: "Standing", color: "#0A84FF", soft: "#E6F2FF", description: "Босоо байрлал, бага хэлбэлзэл" },
-  walking: { key: "walking", noun: "Алхах", label: "Алхаж байна", short: "Walking", color: "#30B07A", soft: "#E5F6EE", description: "Тогтмол давтамжтай хэлбэлзэл" },
-  running: { key: "running", noun: "Гүйх", label: "Гүйж байна", short: "Running", color: "#FF9F0A", soft: "#FFF3E0", description: "Өндөр далайц, өндөр давтамж" },
-  lying: { key: "lying", noun: "Хэвтэх", label: "Хэвтэж байна", short: "Lying", color: "#8E8E93", soft: "#F1F1F3", description: "Таталцлын тэнхлэг хэвтээ" },
-  fall: { key: "fall", noun: "Уналт", label: "Уналт илэрлээ", short: "FALL!", color: "#FF3B30", soft: "#FFE9E7", description: "Огцом цохилт → хөдөлгөөнгүй" },
+  sitting: { key: "sitting", noun: "Суух", label: "Сууж байна", short: "Суух", color: "#7c7c7c", soft: "#f1f1f1", description: "Тогтвортой байрлал, бага хурдатгал" },
+  standing: { key: "standing", noun: "Зогсох", label: "Зогсож байна", short: "Зогсох", color: "#4a4a4a", soft: "#f1f1f1", description: "Босоо байрлал, бага хэлбэлзэл" },
+  walking: { key: "walking", noun: "Алхах", label: "Алхаж байна", short: "Алхах", color: "#2a61fd", soft: "#eaf0ff", description: "Тогтмол давтамжтай хэлбэлзэл" },
+  running: { key: "running", noun: "Гүйх", label: "Гүйж байна", short: "Гүйх", color: "#151515", soft: "#f1f1f1", description: "Өндөр далайц, өндөр давтамж" },
+  lying: { key: "lying", noun: "Хэвтэх", label: "Хэвтэж байна", short: "Хэвтэх", color: "#b4b4b4", soft: "#f1f1f1", description: "Таталцлын тэнхлэг хэвтээ" },
+  fall: { key: "fall", noun: "Уналт", label: "Уналт илэрлээ", short: "УНАЛТ!", color: "#FF3B30", soft: "#FFE9E7", description: "Огцом цохилт → хөдөлгөөнгүй" },
 };
 
 export const ACTIVITY_ORDER: Activity[] = ["sitting", "standing", "walking", "running", "lying", "fall"];

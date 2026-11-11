@@ -23,6 +23,12 @@ MODEL_PATH = Path(__file__).parent / "models" / "model.pkl"
 
 app = FastAPI(title="MotionCare ML")
 model = joblib.load(MODEL_PATH) if MODEL_PATH.exists() else None
+if model is not None:
+    model.n_jobs = 1  # нэг цонхонд олон thread удаан (Windows дээр ~180 мс → ~10 мс)
+# Next.js сүүлийн 3 сек-ийг илгээдэг. Загварын сурсан цонхны уртаар (train2.py → model.window_) энд тайрна.
+# Хуучин train.py-ийн загварт window_ байхгүй — тэр нь 100 хэмжилтээр (2 сек) сурсан.
+WINDOW = getattr(model, "window_", 100) if model is not None else None
+MODEL_NAME = f"random-forest-{WINDOW / 50:g}s" if model is not None else None
 
 
 class Sample(BaseModel):
@@ -42,17 +48,27 @@ class Window(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"ok": True, "model": MODEL_PATH.name if model else None}
+    return {"ok": True, "model": MODEL_PATH.name if model else None, "window": WINDOW}
 
 
 @app.post("/predict")
 def predict(w: Window):
     if model is None:
         raise HTTPException(503, "model not trained yet — run train.py")
-    x = np.array([[s.ax, s.ay, s.az, s.gx, s.gy, s.gz] for s in w.samples], dtype=np.float32)
+    samples = w.samples[-WINDOW:] if WINDOW else w.samples
+    if WINDOW and len(samples) < WINDOW // 2:
+        raise HTTPException(422, f"хэмжилт хангалтгүй: {len(samples)}/{WINDOW}")
+    x = np.array([[s.ax, s.ay, s.az, s.gx, s.gy, s.gz] for s in samples], dtype=np.float32)
     proba = model.predict_proba([extract_features(x)])[0]
     scores = {c: 0.0 for c in CLASSES}
+    transition = 0.0
     for cls, p in zip(model.classes_, proba):
-        scores[str(cls)] = float(p)
+        if str(cls) == "transition":
+            transition = float(p)  # суух/босох/хэвтэх шилжилт — веб талд ангиллыг солихгүй
+        else:
+            scores[str(cls)] = float(p)
+    total = sum(scores.values())
+    if total > 0:
+        scores = {c: v / total for c, v in scores.items()}
     activity = max(scores, key=scores.get)
-    return {"activity": activity, "scores": scores, "model": "random-forest-v1"}
+    return {"activity": activity, "scores": scores, "transition": transition, "model": MODEL_NAME}

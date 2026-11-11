@@ -7,49 +7,41 @@ import { ActivityRings, DayBar, SignalChart } from "./charts";
 import { ActivityIcon, Battery, Bell, Brain, Chip, Clock, Pin, Rings, Signal, Wave } from "./Icons";
 import { BigValue, Card, CardHeader, Skeleton } from "./ui";
 
-/** Одоогийн хөдөлгөөн — гол карт */
 export function CurrentActivityCard({ snap }: { snap: Snapshot }) {
   const p = snap.current;
   if (!p) return <Card className="min-h-[220px]"><Skeleton className="h-full min-h-[180px]" /></Card>;
   const meta = ACTIVITIES[p.activity];
   const isFall = p.activity === "fall";
   return (
-    <section
-      className="card relative overflow-hidden p-6"
-      style={{ background: isFall ? meta.color : undefined }}
-    >
-      <div
-        className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full opacity-60 blur-3xl dark:opacity-15"
-        style={{ background: isFall ? "#ffffff33" : meta.soft }}
-      />
-      <div className={`relative flex items-center gap-1.5 text-[15px] font-semibold ${isFall ? "text-white" : ""}`} style={{ color: isFall ? undefined : meta.color }}>
+    <section className="card relative overflow-hidden p-6 text-white" style={{ background: isFall ? meta.color : "#151515" }}>
+      <div className="relative flex items-center gap-1.5 text-[15px] font-semibold">
         <Wave size={18} /> Одоогийн төлөв
-        <span className={`ml-auto text-[13px] font-normal ${isFall ? "text-white/80" : "text-muted"}`}>{fmtClock(p.t)}</span>
+        <span className="ml-auto text-[13px] font-normal text-white/60">{fmtClock(p.t)}</span>
       </div>
       <div key={p.activity} className="fade-up relative mt-6 flex items-center gap-5">
         <span
           className="grid h-20 w-20 shrink-0 place-items-center rounded-[22px]"
-          style={{ background: isFall ? "#ffffff" : meta.color, color: isFall ? meta.color : "#fff" }}
+          style={{ background: isFall ? "#ffffff" : "#2a61fd", color: isFall ? meta.color : "#fff" }}
         >
           <ActivityIcon activity={p.activity} size={44} />
         </span>
-        <div className={isFall ? "text-white" : ""}>
+        <div>
           <h2 className="text-[32px] font-bold leading-tight tracking-tight">{meta.label}</h2>
-          <p className={`mt-1 text-[15px] ${isFall ? "text-white/85" : "text-muted"}`}>
+          <p className="mt-1 text-[15px] text-white/70">
             {snap.currentSince ? `${fmtElapsed(snap.now - snap.currentSince)} үргэлжилж байна` : meta.description}
           </p>
         </div>
       </div>
-      <div className={`relative mt-6 flex items-end justify-between ${isFall ? "text-white" : ""}`}>
+      <div className="relative mt-6 flex items-end justify-between">
         <div>
-          <p className={`text-[13px] ${isFall ? "text-white/80" : "text-muted"}`}>Итгэлцэл</p>
+          <p className="text-[13px] text-white/60">Итгэлцэл</p>
           <BigValue value={Math.round(p.confidence * 100)} unit="%" />
         </div>
         <div className="w-1/2">
-          <div className={`h-2 overflow-hidden rounded-full ${isFall ? "bg-white/30" : "bg-fill"}`}>
-            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${p.confidence * 100}%`, background: isFall ? "#fff" : meta.color }} />
+          <div className="h-2 overflow-hidden rounded-full bg-white/15">
+            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${p.confidence * 100}%`, background: isFall ? "#fff" : "#2a61fd" }} />
           </div>
-          <p className={`mt-2 text-right text-[12px] ${isFall ? "text-white/80" : "text-muted"}`}>
+          <p className="mt-2 text-right text-[12px] text-white/60">
             {p.model} · {p.latencyMs.toFixed(1)} ms
           </p>
         </div>
@@ -58,18 +50,17 @@ export function CurrentActivityCard({ snap }: { snap: Snapshot }) {
   );
 }
 
-/** Бүх ангиллын магадлал */
 export function ScoresCard({ snap }: { snap: Snapshot }) {
   const s = snap.current?.scores;
   return (
     <Card>
-      <CardHeader icon={<Brain size={18} />} title="ML ангилал" color="#5e5ce6" meta="2 сек цонх" />
+      <CardHeader icon={<Brain size={18} />} title="ML ангилал" color="#141414" meta="2 сек цонх" />
       <div className="space-y-3">
         {ACTIVITY_ORDER.map((k) => {
           const v = s?.[k] ?? 0;
           return (
             <div key={k} className="flex items-center gap-3">
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg" style={{ background: ACTIVITIES[k].soft, color: ACTIVITIES[k].color }}>
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg" style={{ background: ACTIVITIES[k].soft, color: k === "fall" ? ACTIVITIES[k].color : "#141414" }}>
                 <ActivityIcon activity={k} size={16} />
               </span>
               <span className="w-16 text-[13px]">{ACTIVITIES[k].noun}</span>
@@ -89,16 +80,16 @@ export function SignalCard({ snap }: { snap: Snapshot }) {
   const last = snap.signal[snap.signal.length - 1];
   return (
     <Card>
-      <CardHeader icon={<Wave size={18} />} title="Мэдрэгчийн дохио" color="#ff375f" meta="MPU6050" />
+      <CardHeader icon={<Wave size={18} />} title="Мэдрэгчийн дохио" color="#141414" meta="MPU6050" />
       <div className="flex flex-wrap items-end gap-x-8 gap-y-2">
         <div>
           <p className="text-[13px] text-muted">Хурдатгалын хэмжээ</p>
           <BigValue value={last ? last.mag.toFixed(2) : "—"} unit="g" />
         </div>
         <div className="flex gap-4 pb-1 text-[12px] text-muted">
-          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-[#ff375f]" />|a|</span>
-          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-[#0a84ff]" />aY</span>
-          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-[#5e5ce6]" />aZ</span>
+          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-[#2a61fd]" />|a|</span>
+          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-[#9e9e9e]" />aY</span>
+          <span className="flex items-center gap-1.5"><i className="h-2 w-2 rounded-full bg-[#151515]" />aZ</span>
         </div>
       </div>
       <div className="mt-3">{snap.signal.length ? <SignalChart data={snap.signal} now={snap.now} /> : <Skeleton className="h-44" />}</div>
@@ -111,12 +102,12 @@ export function TodayCard({ snap }: { snap: Snapshot }) {
   const active = t.walking + t.running;
   const standing = t.standing + active;
   const rings = [
-    { label: "Идэвхтэй", value: active / 60000, goal: 30, color: "#30b07a", unit: "мин" },
-    { label: "Босоо", value: standing / 60000, goal: 120, color: "#0a84ff", unit: "мин" },
+    { label: "Идэвхтэй", value: active / 60000, goal: 30, color: "#2a61fd", unit: "мин" },
+    { label: "Босоо", value: standing / 60000, goal: 120, color: "#151515", unit: "мин" },
   ];
   return (
     <Card>
-      <CardHeader icon={<Rings size={18} />} title="Өнөөдрийн идэвх" color="#30b07a" meta="00:00-ээс" href="/history" />
+      <CardHeader icon={<Rings size={18} />} title="Өнөөдрийн идэвх" color="#141414" meta="00:00-ээс" href="/history" />
       <div className="flex items-center gap-6">
         <ActivityRings rings={rings} />
         <div className="space-y-4">
@@ -141,13 +132,13 @@ export function TimelineCard({ snap }: { snap: Snapshot }) {
   const items = [...snap.timeline].reverse().filter((s) => s.end - s.start > 3000).slice(0, 7);
   return (
     <Card>
-      <CardHeader icon={<Clock size={18} />} title="Хөдөлгөөний түүх" color="#0a84ff" href="/history" meta="Бүгд" />
+      <CardHeader icon={<Clock size={18} />} title="Хөдөлгөөний түүх" color="#141414" href="/history" meta="Бүгд" />
       <ul className="divide-y divide-sep">
         {items.map((s, i) => {
           const m = ACTIVITIES[s.activity];
           return (
             <li key={`${s.start}-${i}`} className="flex items-center gap-3 py-2.5">
-              <span className="grid h-8 w-8 place-items-center rounded-[10px]" style={{ background: m.soft, color: m.color }}>
+              <span className="grid h-8 w-8 place-items-center rounded-[10px]" style={{ background: m.soft, color: s.activity === "fall" ? m.color : "#141414" }}>
                 <ActivityIcon activity={s.activity} size={18} />
               </span>
               <div className="min-w-0">
@@ -170,7 +161,7 @@ export function LocationCard({ snap }: { snap: Snapshot }) {
   return (
     <Card className="overflow-hidden !p-0">
       <div className="p-5 pb-3">
-        <CardHeader icon={<Pin size={18} />} title="Байршил" color="#ff9f0a" meta={g ? fmtAgo(snap.now - g.t) : undefined} />
+        <CardHeader icon={<Pin size={18} />} title="Байршил" color="#141414" meta={g ? fmtAgo(snap.now - g.t) : undefined} />
         {g ? (
           <p className="tabular text-[15px] font-medium">
             {g.lat.toFixed(5)}° N, {g.lng.toFixed(5)}° E
@@ -195,7 +186,7 @@ export function LocationCard({ snap }: { snap: Snapshot }) {
 export function AlertsCard({ snap }: { snap: Snapshot }) {
   return (
     <Card>
-      <CardHeader icon={<Bell size={18} />} title="Анхааруулга" color="#ff3b30" meta={`${snap.alerts.length}`} />
+      <CardHeader icon={<Bell size={18} />} title="Анхааруулга" color="#141414" meta={`${snap.alerts.length}`} />
       {snap.alerts.length ? (
         <ul className="space-y-2">
           {snap.alerts.slice(0, 4).map((a) => (
@@ -212,8 +203,8 @@ export function AlertsCard({ snap }: { snap: Snapshot }) {
           ))}
         </ul>
       ) : (
-        <div className="flex items-center gap-3 rounded-2xl bg-[#30b07a]/10 p-3 text-[14px]">
-          <span className="text-[#30b07a]">●</span> Хэвийн — анхааруулга алга
+        <div className="flex items-center gap-3 rounded-2xl bg-fill p-3 text-[14px]">
+          <span className="text-[#2a61fd]">●</span> Хэвийн — анхааруулга алга
         </div>
       )}
     </Card>
@@ -232,7 +223,7 @@ export function DeviceCard({ snap }: { snap: Snapshot }) {
     : [];
   return (
     <Card>
-      <CardHeader icon={<Chip size={18} />} title="Төхөөрөмж" color="#8e8e93" href="/device" meta={d?.name} />
+      <CardHeader icon={<Chip size={18} />} title="Төхөөрөмж" color="#141414" href="/device" meta={d?.name} />
       <ul className="divide-y divide-sep">
         {rows.map((r) => (
           <li key={r.label} className="flex items-center gap-3 py-2 text-[14px]">

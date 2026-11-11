@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { SensorSample, Snapshot } from "@/lib/types";
 
 type Conn = "connecting" | "live" | "reconnecting";
-/** ESP32 ↔ веб шууд WebSocket-ийн төлөв */
 export type WsState = "off" | "connecting" | "open" | "error";
 
 const WS_STORAGE_KEY = "motioncare.esp32ws";
@@ -14,10 +13,8 @@ const WS_PORT = 81;
 export interface SampleStream {
   deviceId: string | null;
   samples: SensorSample[];
-  /** Сүүлийн багц ирсэн мөч (performance.now) ба тэр үеийн хамгийн сүүлийн t */
   arrivedAt: number;
   lastT: number;
-  /** Өгөгдөл хаанаас ирж байгаа: ESP32-оос шууд (ws) эсвэл серверээр дамжиж (sse) */
   source: "ws" | "sse" | null;
 }
 
@@ -31,7 +28,6 @@ interface LiveCtx {
 }
 const Ctx = createContext<LiveCtx | null>(null);
 
-/** Буферт шинэ хэмжилтүүд нэмж, 12 сек-ээс хуучныг хасна */
 function pushSamples(st: SampleStream, id: string, source: "ws" | "sse", samples: SensorSample[]) {
   if (!samples.length) return;
   if (st.deviceId !== id) {
@@ -59,7 +55,7 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const [conn, setConn] = useState<Conn>("connecting");
   const stream = useRef<SampleStream>({ deviceId: null, samples: [], arrivedAt: 0, lastT: 0, source: null });
-  const wsAlive = useRef(0); // ESP32-оос шууд хамгийн сүүлд өгөгдөл ирсэн мөч
+  const wsAlive = useRef(0);
   const [wsState, setWsState] = useState<WsState>("off");
   const [manual, setManualState] = useState("");
   const poll = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -151,7 +147,6 @@ export function LiveProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // ---- ESP32 ↔ веб шууд WebSocket (ws://<ESP32 IP>:81) ----
   useEffect(() => {
     try {
       setManualState(localStorage.getItem(WS_STORAGE_KEY) ?? "");
@@ -226,7 +221,6 @@ export const useLive = () => {
   return v;
 };
 
-/** "192.168.1.50" эсвэл "ws://192.168.1.50:81" → ws://192.168.1.50:81 */
 function normalizeWs(v: string): string | null {
   const t = v.trim();
   if (!t) return null;

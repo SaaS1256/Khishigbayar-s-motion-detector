@@ -1,9 +1,5 @@
 import type { Activity, Prediction, SensorSample } from "../types";
 
-/**
- * Ангилагчийн гэрээ. Одоогийн baseline-ийг сургасан ML загвараар
- * (жишээ нь Python FastAPI үйлчилгээ) солиход зөвхөн энэ интерфейсийг хэрэгжүүлэхэд хангалттай.
- */
 export interface Classifier {
   readonly name: string;
   predict(deviceId: string, window: SensorSample[]): Promise<Prediction | null>;
@@ -41,10 +37,8 @@ export class HeuristicClassifier implements Classifier {
     const tailStd = stats(tail).std;
 
     const raw: Record<Activity, number> = { sitting: 0, standing: 0, walking: 0, running: 0, lying: 0, fall: 0 };
-    // Динамик хөдөлгөөн
     raw.running = (m.std - 0.5) * 12;
     raw.walking = 3 - Math.abs(m.std - 0.3) * 14;
-    // Статик байрлал (босоо тэнхлэгийн проекц); хөдөлгөөнтэй үед эрс бууруулна
     const still = Math.max(0, 1 - m.std * 8);
     const moving = (1 - still) * 6;
     raw.standing = still * (5 - Math.abs(ay - 0.98) * 18) - moving;
@@ -85,7 +79,7 @@ export class RemoteClassifier implements Classifier {
         signal: AbortSignal.timeout(800),
       });
       if (!res.ok) throw new Error(`ML service ${res.status}`);
-      const j = (await res.json()) as { activity: Activity; scores: Record<Activity, number>; model?: string };
+      const j = (await res.json()) as { activity: Activity; scores: Record<Activity, number>; model?: string; transition?: number };
       return {
         deviceId,
         t: w[w.length - 1].t,
@@ -94,6 +88,7 @@ export class RemoteClassifier implements Classifier {
         scores: j.scores,
         model: j.model ?? this.name,
         latencyMs: performance.now() - started,
+        transition: j.transition,
       };
     } catch {
       return this.fallback.predict(deviceId, w);

@@ -4,8 +4,7 @@ import { ACTIVITIES, ACTIVITY_ORDER } from "@/lib/activities";
 import { fmtDuration } from "@/lib/format";
 import type { Activity, Snapshot } from "@/lib/types";
 
-/** Хурдатгалын бодит хугацааны график (сүүлийн 10 сек) */
-export function SignalChart({ data, now, color = "#ff375f" }: { data: Snapshot["signal"]; now: number; color?: string }) {
+export function SignalChart({ data, now, color = "#2a61fd" }: { data: Snapshot["signal"]; now: number; color?: string }) {
   const W = 600;
   const H = 160;
   const span = 10_000;
@@ -28,8 +27,8 @@ export function SignalChart({ data, now, color = "#ff375f" }: { data: Snapshot["
         <line key={g} x1={0} x2={W} y1={y((yMax / 3) * g)} y2={y((yMax / 3) * g)} stroke="var(--sep)" strokeDasharray={g ? "3 4" : undefined} />
       ))}
       <path d={area} fill="url(#sig)" />
-      <path d={line("ay")} fill="none" stroke="#0a84ff" strokeOpacity="0.45" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-      <path d={line("az")} fill="none" stroke="#5e5ce6" strokeOpacity="0.45" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      <path d={line("ay")} fill="none" stroke="#9e9e9e" strokeOpacity="0.6" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      <path d={line("az")} fill="none" stroke="#151515" strokeOpacity="0.45" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
       <path d={line("mag")} fill="none" stroke={color} strokeWidth="2.2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
       {[10, 5, 0].map((s) => (
         <text key={s} x={x(now - s * 1000)} y={H + 14} fontSize="11" fill="var(--muted)" textAnchor={s === 10 ? "start" : s === 0 ? "end" : "middle"}>
@@ -40,7 +39,6 @@ export function SignalChart({ data, now, color = "#ff375f" }: { data: Snapshot["
   );
 }
 
-/** Apple Activity маягийн цагираг */
 export function ActivityRings({ rings }: { rings: { value: number; goal: number; color: string }[] }) {
   const size = 132;
   const stroke = 14;
@@ -71,7 +69,6 @@ export function ActivityRings({ rings }: { rings: { value: number; goal: number;
   );
 }
 
-/** Өдрийн хуваарилалтын хэвтээ зурвас + тайлбар */
 export function DayBar({ today }: { today: Record<Activity, number> }) {
   const keys = ACTIVITY_ORDER.filter((k) => k !== "fall");
   const total = keys.reduce((s, k) => s + today[k], 0) || 1;
@@ -95,7 +92,6 @@ export function DayBar({ today }: { today: Record<Activity, number> }) {
   );
 }
 
-/** Цаг тутмын овоолсон багана график (24 цаг) */
 export function HourlyChart({ hours }: { hours: { hour: number; durations: Record<Activity, number> | null }[] }) {
   const W = 720;
   const H = 200;

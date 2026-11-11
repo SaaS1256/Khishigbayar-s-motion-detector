@@ -10,7 +10,7 @@ import { getRepository } from "./store";
  */
 const DEVICE_ID = "demo-esp32s3";
 const HZ = 50;
-const BASE = { lat: 47.9184, lng: 106.9177 }; // Улаанбаатар
+const BASE = { lat: 47.9184, lng: 106.9177 };
 
 const PLAN: { a: Activity; sec: [number, number] }[] = [
   { a: "sitting", sec: [25, 45] },
@@ -89,12 +89,11 @@ export function ensureSimulator() {
   const st: SimState = { idx: 0, left: rnd(...PLAN[0].sec), phase: 0, timer: undefined as never };
   let battery = 86;
   st.timer = setInterval(() => {
-    // Бодит төхөөрөмж идэвхтэй бол demo урсгалыг түр зогсооно
     if (repo.listDevices().some((d) => !d.simulated && Date.now() - d.lastSeen < 10_000)) return;
     const a = PLAN[st.idx].a;
     const now = Date.now();
     const samples: SensorSample[] = [];
-    const per = HZ / 2; // 0.5 сек тутам 25 хэмжилт илгээнэ
+    const per = HZ / 2;
     for (let k = 0; k < per; k++) {
       samples.push(sample(a, now - (per - k) * (1000 / HZ), st.phase));
       st.phase += 1 / HZ;

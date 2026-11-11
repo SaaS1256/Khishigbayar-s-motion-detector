@@ -1,15 +1,7 @@
 "use client";
 
 import { useLive } from "@/components/LiveProvider";
-import {
-  AlertsCard,
-  CurrentActivityCard,
-  DeviceCard,
-  LocationCard,
-  ScoresCard,
-  TimelineCard,
-  TodayCard,
-} from "@/components/dashboard";
+import { AlertsCard, CurrentActivityCard, ScoresCard } from "@/components/dashboard";
 import { LiveSensorCard } from "@/components/LiveSensorCard";
 import { PageTitle, Skeleton } from "@/components/ui";
 
@@ -24,7 +16,7 @@ export default function SummaryPage() {
 
   return (
     <>
-      <PageTitle title="Хураангуй" subtitle={today()} />
+      <PageTitle title="Өндөр настныг хянах систем" subtitle={today()} />
       {!snap ? (
         <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -36,16 +28,10 @@ export default function SummaryPage() {
           <div className="space-y-4 lg:col-span-2">
             <CurrentActivityCard snap={snap} />
             <LiveSensorCard />
-            <div className="grid gap-4 md:grid-cols-2">
-              <TodayCard snap={snap} />
-              <TimelineCard snap={snap} />
-            </div>
           </div>
           <div className="space-y-4">
             <AlertsCard snap={snap} />
             <ScoresCard snap={snap} />
-            <LocationCard snap={snap} />
-            <DeviceCard snap={snap} />
           </div>
         </div>
       )}

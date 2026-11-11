@@ -10,3 +10,5 @@ __pycache__
 ml/.venv
 ml/models/*.pkl
 firmware/**/config.h
+# Түүхийн файл (сервер дахин асахад сэргээгдэнэ)
+.data

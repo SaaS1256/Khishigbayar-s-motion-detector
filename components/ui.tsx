@@ -5,7 +5,6 @@ export function Card({ children, className = "" }: { children: React.ReactNode; 
   return <section className={`card p-5 ${className}`}>{children}</section>;
 }
 
-/** Apple Health маягийн картын толгой: өнгөт дүрс + гарчиг, баруун талд цаг / холбоос */
 export function CardHeader({
   icon,
   title,

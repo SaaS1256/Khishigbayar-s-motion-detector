@@ -34,7 +34,6 @@ export async function GET(req: Request) {
           cleanup();
         }
       };
-      // Олон update ирэхэд 250 ms-д нэг удаа нэгтгэж илгээнэ
       const onUpdate = () => {
         if (!pending) {
           pending = true;
@@ -55,7 +54,6 @@ export async function GET(req: Request) {
       bus.on("update", onUpdate);
       bus.on("samples", onSamples);
       send();
-      // Шинээр холбогдсон браузерт сүүлийн 8 секундийг нэг дор өгнө
       const dev = activeDeviceId();
       if (dev) sendSamples(dev, getRepository().getWindow(dev, 8000));
       cleanup = () => {

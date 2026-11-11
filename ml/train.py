@@ -1,14 +1,4 @@
-"""
-Сургалтын скрипт.
 
-Өгөгдлийн формат (data/*.csv):
-    t,ax,ay,az,gx,gy,gz,label
-    label ∈ {sitting, standing, walking, running, lying, fall}
-
-Ажиллуулах:
-    python train.py --data data --window 100 --step 50
-Гаралт: models/model.pkl ба тестийн тайлан (accuracy, confusion matrix)
-"""
 import argparse
 from pathlib import Path
 
@@ -26,6 +16,7 @@ def windows(df: pd.DataFrame, size: int, step: int):
     x = df[["ax", "ay", "az", "gx", "gy", "gz"]].to_numpy(np.float32)
     y = df["label"].to_numpy()
     for i in range(0, len(df) - size + 1, step):
+        
         labels, counts = np.unique(y[i : i + size], return_counts=True)
         yield extract_features(x[i : i + size]), labels[counts.argmax()]
 
@@ -34,7 +25,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="data")
     ap.add_argument("--window", type=int, default=100, help="2 сек @ 50 Hz")
-    ap.add_argument("--step", type=int, default=50, help="50% давхцал")
+    ap.add_argument("--step", type=int, default=50, help="50 percent overlap")
     a = ap.parse_args()
 
     X, Y = [], []
